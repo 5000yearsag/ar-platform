@@ -12,7 +12,9 @@ import com.vr.platform.modules.ar.entity.request.GetSceneRequest;
 import com.vr.platform.modules.ar.entity.response.GetAllSceneRes;
 import com.vr.platform.modules.ar.entity.response.WxGetAllSceneRes;
 import com.vr.platform.modules.ar.service.SceneInfoService;
+import com.vr.platform.modules.ar.service.StatisticsService;
 import com.vr.platform.modules.ar.service.WxAppService;
+import com.vr.platform.modules.ar.entity.UserHistory;
 import com.vr.platform.modules.oss.entity.UploadFileInfo;
 import com.vr.platform.modules.oss.service.AliOssService;
 import com.vr.platform.modules.oss.service.FileService;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
@@ -60,6 +63,9 @@ public class GuestController {
 
     @Autowired
     private FileStorageService fileStorageService;//注入实列
+
+    @Resource
+    private StatisticsService statisticsService;
 
     @ApiModelProperty(value = "小程序获取所有场景")
     @RequestMapping(value = "/getAllSceneByCollection", method = RequestMethod.GET)
@@ -126,6 +132,44 @@ public class GuestController {
         log.info("当前路径：{}",filePath);
         OutputStream os = Files.newOutputStream(Paths.get(filePath+"\\qrcde.jpg"));
         os.write(qrcodeFileBytes);
+    }
+
+    @ApiModelProperty(value = "访问统计")
+    @GetMapping("/statistic")
+    public ResponseFormat<Void> recordStatistic(
+            @RequestParam(name = "collectionUuid") String collectionUuid,
+            @RequestParam(name = "type") String type,
+            @RequestParam(name = "openId", required = false) String openId,
+            HttpServletRequest request) {
+        statisticsService.recordAccess(collectionUuid, type, openId, request);
+        return ResponseFormat.success();
+    }
+
+    @ApiModelProperty(value = "获取微信openId")
+    @GetMapping("/openId")
+    public ResponseFormat<String> getOpenId(
+            @RequestParam(name = "code") String code,
+            @RequestParam(name = "appId") String appId) {
+        String openId = wxAppService.getOpenId(code, appId);
+        return ResponseFormat.success(openId);
+    }
+
+    @ApiModelProperty(value = "记录访问历史")
+    @GetMapping("/historyRecord")
+    public ResponseFormat<Void> recordHistory(
+            @RequestParam(name = "openId") String openId,
+            @RequestParam(name = "appId") String appId,
+            @RequestParam(name = "collectionUuid") String collectionUuid) {
+        statisticsService.recordUserHistory(openId, appId, collectionUuid);
+        return ResponseFormat.success();
+    }
+
+    @ApiModelProperty(value = "获取访问历史")
+    @GetMapping("/history")
+    public ResponseFormat<List<UserHistory>> getUserHistory(
+            @RequestParam(name = "openId") String openId) {
+        List<UserHistory> history = statisticsService.getUserHistory(openId);
+        return ResponseFormat.success(history);
     }
 
 }

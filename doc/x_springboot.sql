@@ -72,6 +72,32 @@ CREATE TABLE `collection_app` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='合集与微信小程序关联表';
 
+drop table if exists `access_statistics`;
+CREATE TABLE `access_statistics` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `collection_uuid` varchar(64) NOT NULL COMMENT '合集uuid',
+  `open_id` varchar(64) DEFAULT NULL COMMENT '用户openId',
+  `statistic_type` varchar(20) NOT NULL COMMENT '统计类型',
+  `user_ip` varchar(45) DEFAULT NULL COMMENT '用户IP地址',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_collection_type_time` (`collection_uuid`, `statistic_type`, `create_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='访问统计表';
+
+drop table if exists `user_history`;
+CREATE TABLE `user_history` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `open_id` varchar(64) NOT NULL COMMENT '用户openId',
+  `app_id` varchar(64) NOT NULL COMMENT '小程序appId',
+  `collection_uuid` varchar(64) NOT NULL COMMENT '合集uuid',
+  `collection_name` varchar(100) DEFAULT NULL COMMENT '合集名称',
+  `access_count` int(11) DEFAULT 1 COMMENT '访问次数',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '首次访问时间',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '记录更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_openid_collection` (`open_id`, `collection_uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户访问历史表';
+
 
 INSERT INTO `yaoculture`.`t_user` (`id`, `username`, `password`, `email`, `phone`, `status`) VALUES ('1', 'user1', '$2a$10$oRUL6Z7B86L4mDfVaQzEEe9XxmfnnBOCcBmOUSVV/0XP1jIcosohe', '111124444', '13978786565', '0');
 INSERT INTO `yaoculture`.`t_user` (`id`, `username`, `password`, `email`, `phone`, `status`) VALUES ('2', 'user2', '$2a$10$oRUL6Z7B86L4mDfVaQzEEe9XxmfnnBOCcBmOUSVV/0XP1jIcosohe', '111124444', '13978786565', '0');
