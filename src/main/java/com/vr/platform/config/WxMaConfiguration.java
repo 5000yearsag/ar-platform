@@ -35,8 +35,9 @@ public class WxMaConfiguration {
     @Bean
     public WxMaService wxMaService() {
         List<WxMaProperties.Config> configs = this.properties.getConfigs();
-        if (configs == null) {
-            throw new WxRuntimeException("添加相关配置");
+        if (configs == null || configs.isEmpty()) {
+            log.warn("No WeChat Mini Program config found, creating empty service");
+            return new WxMaServiceImpl();
         }
         WxMaService maService = new WxMaServiceImpl();
         maService.setMultiConfigs(

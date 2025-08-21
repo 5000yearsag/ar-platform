@@ -17,6 +17,9 @@ public interface CollectionInfoMapper extends BaseMapper<CollectionInfo> {
     @Select("SELECT * FROM collection_info WHERE collection_uuid = #{collectionUuid}")
     CollectionInfo getCollectionByUuid(@Param("collectionUuid") String collectionUuid);
 
+    @Select("SELECT collection_name FROM collection_info WHERE collection_uuid = #{collectionUuid}")
+    String getCollectionNameByUuid(@Param("collectionUuid") String collectionUuid);
+
     @Select("SELECT * FROM collection_info as ci " +
             " left join collection_app as ca " +
             " on ci.collection_uuid = ca.collection_uuid ")

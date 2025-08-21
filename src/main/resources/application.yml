@@ -41,9 +41,9 @@ wx:
     configs:
       - appid: 'wxe7b4faed5d067dd6'
         secret: '49168bb05bf2a42f382c59191e0d9b74'
-        token: '@token'
-        aesKey: '@aesKey'
-        msgDataFormat: '@msgDataFormat'
+        token: 'default_token'
+        aesKey: 'abcdefghijklmnopqrstuvwxyz1234567890123'
+        msgDataFormat: 'JSON'
 
 
 

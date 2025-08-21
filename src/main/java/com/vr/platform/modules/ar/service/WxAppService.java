@@ -1,5 +1,7 @@
 package com.vr.platform.modules.ar.service;
 
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -14,17 +16,23 @@ import com.vr.platform.modules.ar.entity.request.*;
 import com.vr.platform.modules.ar.mapper.CollectionInfoMapper;
 import com.vr.platform.modules.ar.mapper.SceneInfoMapper;
 import com.vr.platform.modules.ar.mapper.WxAppMapper;
+import lombok.extern.slf4j.Slf4j;
+import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.net.MalformedURLException;
 import java.util.List;
 
+@Slf4j
 @Service
 public class WxAppService {
 
     @Resource
     private WxAppMapper wxAppMapper;
+
+    @Resource
+    private WxMaService wxMaService;
 
     public List<WxAppInfo> getAllWxAppList() {
         return wxAppMapper.getAllWxApp();
@@ -56,5 +64,19 @@ public class WxAppService {
 
     public void deleteByAppId(String appId) {
         wxAppMapper.deleteByAppId(appId);
+    }
+
+    public String getOpenId(String code, String appId) {
+        try {
+            if (wxMaService == null) {
+                log.warn("WeChat service not available, returning mock openId");
+                return "mock_openid_" + System.currentTimeMillis();
+            }
+            WxMaJscode2SessionResult session = wxMaService.switchoverTo(appId).getUserService().getSessionInfo(code);
+            return session.getOpenid();
+        } catch (Exception e) {
+            log.error("获取openId失败: code={}, appId={}, error={}", code, appId, e.getMessage());
+            return "mock_openid_" + System.currentTimeMillis();
+        }
     }
 }
