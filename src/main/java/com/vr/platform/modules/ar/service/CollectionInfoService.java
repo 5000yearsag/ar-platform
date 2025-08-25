@@ -20,10 +20,12 @@ import com.vr.platform.modules.ar.entity.SceneInfo;
 import com.vr.platform.modules.ar.entity.WxAppInfo;
 import com.vr.platform.modules.ar.entity.request.*;
 import com.vr.platform.modules.ar.entity.response.GetCollectionRes;
+import com.vr.platform.modules.ar.entity.response.DashboardStatsResponse;
 import com.vr.platform.modules.ar.mapper.CollectionAppMapper;
 import com.vr.platform.modules.ar.mapper.CollectionInfoMapper;
 import com.vr.platform.modules.ar.mapper.SceneInfoMapper;
 import com.vr.platform.modules.ar.mapper.WxAppMapper;
+import com.vr.platform.modules.ar.mapper.AccessStatisticsMapper;
 import com.vr.platform.modules.oss.service.FileService;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -56,6 +58,8 @@ public class CollectionInfoService {
     private SceneInfoMapper sceneInfoMapper;
     @Resource
     private WxAppMapper wxAppMapper;
+    @Resource
+    private AccessStatisticsMapper accessStatisticsMapper;
 
     @Resource
     private CommonService commonService;
@@ -98,8 +102,17 @@ public class CollectionInfoService {
         PageHelper.startPage(request.getPageNum(), request.getPageSize());
         List<GetCollectionRes> allCollection = collectionInfoMapper.getAllCollection();
         allCollection.forEach(collectionRes -> {
-            collectionRes.setSceneCount(sceneInfoMapper.getSceneCountByCollection(collectionRes.getCollectionUuid()));
-            collectionRes.setCollectionAppList(collectionAppMapper.getAppByCollectionUuid(collectionRes.getCollectionUuid()));
+            String collectionUuid = collectionRes.getCollectionUuid();
+            collectionRes.setSceneCount(sceneInfoMapper.getSceneCountByCollection(collectionUuid));
+            collectionRes.setCollectionAppList(collectionAppMapper.getAppByCollectionUuid(collectionUuid));
+            
+            // 设置统计数据
+            collectionRes.setPvCount(accessStatisticsMapper.getCollectionStatCount(collectionUuid, "pvCount"));
+            collectionRes.setClick1Count(accessStatisticsMapper.getCollectionStatCount(collectionUuid, "click1Count"));
+            collectionRes.setClick2Count(accessStatisticsMapper.getCollectionStatCount(collectionUuid, "click2Count"));
+            collectionRes.setClick3Count(accessStatisticsMapper.getCollectionStatCount(collectionUuid, "click3Count"));
+            collectionRes.setClick4Count(accessStatisticsMapper.getCollectionStatCount(collectionUuid, "click4Count"));
+            collectionRes.setClick5Count(accessStatisticsMapper.getCollectionStatCount(collectionUuid, "click5Count"));
         });
 
         return new PageInfo<>(allCollection);
@@ -253,5 +266,15 @@ public class CollectionInfoService {
 
         log.info("小程序码生成url:{}",wxImgUrl);
         return wxImgUrl;
+    }
+
+    public DashboardStatsResponse getDashboardStats() {
+        log.info("getDashboardStats");
+        int totalCollections = collectionInfoMapper.getTotalCollectionCount();
+        int totalScenes = sceneInfoMapper.getTotalSceneCount();
+        int totalAccess = accessStatisticsMapper.getTotalAccessCount();
+        int totalUsers = accessStatisticsMapper.getTotalUserCount();
+        
+        return new DashboardStatsResponse(totalCollections, totalScenes, totalAccess, totalUsers);
     }
 }

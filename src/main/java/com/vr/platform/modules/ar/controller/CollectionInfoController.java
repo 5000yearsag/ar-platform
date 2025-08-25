@@ -5,6 +5,7 @@ import com.vr.platform.common.bean.response.ResponseFormat;
 import com.vr.platform.modules.ar.entity.CollectionInfo;
 import com.vr.platform.modules.ar.entity.request.*;
 import com.vr.platform.modules.ar.entity.response.GetCollectionRes;
+import com.vr.platform.modules.ar.entity.response.DashboardStatsResponse;
 import com.vr.platform.modules.ar.service.CollectionInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -88,5 +89,13 @@ public class CollectionInfoController {
         log.info("updateCollection:{}", addCollectionRequest.toString());
         collectionInfoService.updateCollection(addCollectionRequest);
         return ResponseFormat.success();
+    }
+
+    @ApiOperation(value = "获取仪表盘统计数据", notes = "获取仪表盘统计数据")
+    @GetMapping("/dashboardStats")
+    public ResponseFormat<DashboardStatsResponse> getDashboardStats() {
+        log.info("getDashboardStats");
+        DashboardStatsResponse stats = collectionInfoService.getDashboardStats();
+        return ResponseFormat.success(stats);
     }
 }

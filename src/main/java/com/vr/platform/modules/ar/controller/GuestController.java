@@ -9,12 +9,16 @@ import com.aliyun.oss.model.OSSObjectSummary;
 import com.vr.platform.common.bean.response.ResponseFormat;
 import com.vr.platform.modules.ar.entity.SceneInfo;
 import com.vr.platform.modules.ar.entity.request.GetSceneRequest;
+import com.vr.platform.modules.ar.entity.request.GetAllCollectionRequest;
 import com.vr.platform.modules.ar.entity.response.GetAllSceneRes;
 import com.vr.platform.modules.ar.entity.response.WxGetAllSceneRes;
+import com.vr.platform.modules.ar.entity.response.GetCollectionRes;
 import com.vr.platform.modules.ar.service.SceneInfoService;
 import com.vr.platform.modules.ar.service.StatisticsService;
+import com.vr.platform.modules.ar.service.CollectionInfoService;
 import com.vr.platform.modules.ar.service.WxAppService;
 import com.vr.platform.modules.ar.entity.UserHistory;
+import com.github.pagehelper.PageInfo;
 import com.vr.platform.modules.oss.entity.UploadFileInfo;
 import com.vr.platform.modules.oss.service.AliOssService;
 import com.vr.platform.modules.oss.service.FileService;
@@ -66,6 +70,9 @@ public class GuestController {
 
     @Resource
     private StatisticsService statisticsService;
+    
+    @Autowired
+    private CollectionInfoService collectionInfoService;
 
     @ApiModelProperty(value = "小程序获取所有场景")
     @RequestMapping(value = "/getAllSceneByCollection", method = RequestMethod.GET)
@@ -106,8 +113,8 @@ public class GuestController {
     public void genQrCode() throws WxErrorException, IOException {
         log.info("genQrCode");
 
-        String appId ="wxa7aaf8df3c07a824";
-        String appSecret = "b849603fb2ae1de4c8544eea030d9514";
+        String appId ="wx360d6d845e60562e";
+        String appSecret = "1c6324d57b647323f7d5317f316bdb81";
 //        String wxScenePage ="pages/index/index?collectionUuid=72ae19ddb6fe458c8798c6762d65d26f";
         String wxScenePage ="pages/index/index";
         String fileEnv ="trial";
@@ -170,6 +177,46 @@ public class GuestController {
             @RequestParam(name = "openId") String openId) {
         List<UserHistory> history = statisticsService.getUserHistory(openId);
         return ResponseFormat.success(history);
+    }
+    
+    @ApiModelProperty(value = "小程序专用 - 获取所有合集列表")
+    @PostMapping("/getAllCollections")
+    public ResponseFormat getAllCollections(
+            @RequestBody Map<String, Object> request) {
+        log.info("getAllCollections for miniprogram: {}", request);
+        
+        try {
+            // 验证小程序AppID - 只允许我们的小程序调用
+            String appId = (String) request.get("appId");
+            if (!"wx360d6d845e60562e".equals(appId)) {
+                log.warn("非法AppID访问: {}", appId);
+                return ResponseFormat.fail();
+            }
+            
+            // 验证时间戳防重放攻击（可选）
+            Long timestamp = request.get("timestamp") != null ? 
+                Long.valueOf(request.get("timestamp").toString()) : 0L;
+            long currentTime = System.currentTimeMillis();
+            if (Math.abs(currentTime - timestamp) > 300000) { // 5分钟有效期
+                log.warn("时间戳验证失败: {}", timestamp);
+                return ResponseFormat.fail();
+            }
+            
+            // 构造分页请求
+            GetAllCollectionRequest collectionRequest = new GetAllCollectionRequest();
+            collectionRequest.setPageNum(request.get("pageNum") != null ? 
+                Integer.valueOf(request.get("pageNum").toString()) : 1);
+            collectionRequest.setPageSize(request.get("pageSize") != null ? 
+                Integer.valueOf(request.get("pageSize").toString()) : 20);
+            
+            PageInfo<GetCollectionRes> result = collectionInfoService.getAllCollection(collectionRequest);
+            log.info("返回合集数量: {}", result.getList().size());
+            return ResponseFormat.success(result);
+            
+        } catch (Exception e) {
+            log.error("获取合集列表失败", e);
+            return ResponseFormat.fail();
+        }
     }
 
 }

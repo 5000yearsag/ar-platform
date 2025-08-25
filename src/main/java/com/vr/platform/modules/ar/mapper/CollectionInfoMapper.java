@@ -40,4 +40,7 @@ public interface CollectionInfoMapper extends BaseMapper<CollectionInfo> {
 
     @Delete("DELETE FROM collection_info WHERE collection_uuid = #{collectionUuid}")
     void deleteByUuid(@Param("collectionUuid") String collectionUuid);
+
+    @Select("SELECT count(*) FROM collection_info")
+    int getTotalCollectionCount();
 }

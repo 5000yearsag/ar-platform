@@ -70,9 +70,11 @@ public class FileService {
         }
         //文件大小
         long size = uploadFile.getSize();
-        long imageSize = 100000L; //100MB
-        if(size > imageSize*1024L){
-            log.error("文件大小超过限制："+size/1024L+"MB");
+        long imageSize = 100L * 1024L * 1024L; //100MB = 104857600 bytes
+        log.info("文件上传检查 - 文件名：{}，文件大小：{}bytes ({}MB)，限制大小：{}bytes ({}MB)", 
+                 uploadFile.getOriginalFilename(), size, size/(1024L*1024L), imageSize, imageSize/(1024L*1024L));
+        if(size > imageSize){
+            log.error("文件大小超过限制：实际{}MB，限制{}MB", size/(1024L*1024L), imageSize/(1024L*1024L));
             throw new BizException(BizReturnCode.BIZ_FILE_UPLOAD_SIZE_EXCEEDS_LIMIT,"单个上传文件不能超过100M");
         }
         String savePath = getFilePath(type);

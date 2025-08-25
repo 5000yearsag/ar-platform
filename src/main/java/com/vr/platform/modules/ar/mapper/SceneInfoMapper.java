@@ -30,14 +30,15 @@ public interface SceneInfoMapper {
     List<SceneInfo> getAllSceneByCollectionForGuest(@Param("collectionUuid") String collectionUuid);
 
     @Insert("INSERT INTO scene_info(collection_uuid, scene_uuid, scene_name, scene_img_url, " +
-            "ar_resource_url, space_param, ar_resource_dimension, video_effect) " +
+            "ar_resource_url, ar_resource_file_name, audio_resource_url, audio_resource_file_name, space_param, ar_resource_dimension, video_effect, extra_json) " +
             "VALUES(#{collectionUuid}, #{sceneUuid}, #{sceneName}, #{sceneImgUrl}, " +
-            " #{arResourceUrl}, #{spaceParam}, #{arResourceDimension}, #{videoEffect} )")
+            " #{arResourceUrl}, #{arResourceFileName}, #{audioResourceUrl}, #{audioResourceFileName}, #{spaceParam}, #{arResourceDimension}, #{videoEffect}, #{extraJson} )")
     void insertSceneInfo(AddSceneRequest sceneInfo);
 
     @Update("UPDATE scene_info SET  scene_name = #{sceneName}, " +
-            "scene_img_url = #{sceneImgUrl}, ar_resource_url = #{arResourceUrl}, space_param = #{spaceParam}, " +
-            " ar_resource_dimension = #{arResourceDimension},video_effect = #{videoEffect} " +
+            "scene_img_url = #{sceneImgUrl}, ar_resource_url = #{arResourceUrl}, ar_resource_file_name = #{arResourceFileName}, audio_resource_url = #{audioResourceUrl}, " +
+            "audio_resource_file_name = #{audioResourceFileName}, space_param = #{spaceParam}, " +
+            " ar_resource_dimension = #{arResourceDimension},video_effect = #{videoEffect}, extra_json = #{extraJson} " +
             "WHERE id = #{id}")
     void updateSceneInfo(SceneInfo sceneInfo);
 
@@ -53,4 +54,7 @@ public interface SceneInfoMapper {
 
     @Delete("DELETE FROM scene_info WHERE collection_uuid = #{collectionUuid}")
     void deleteByCollectionUuid(@Param("collectionUuid") String collectionUuid);
+
+    @Select("SELECT count(*) FROM scene_info")
+    int getTotalSceneCount();
 }

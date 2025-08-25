@@ -21,10 +21,12 @@ public class AllowFileTypeEnums {
     public static final String AVI = "avi";
     public static final String MOV = "mov";
     public static final String GLB = "glb";
+    public static final String MP3 = "mp3";
+    public static final String MAP = "map";
 
     public static List<String> getAllTypeList() {
         return java.util.Arrays.asList(
-                JPG, JPEG, PNG, GIF, MP4, AVI, MOV, GLB
+                JPG, JPEG, PNG, GIF, MP4, AVI, MOV, GLB, MP3, MAP
         );
     }
     public static List<String> getPictureTypeList() {
@@ -42,6 +44,12 @@ public class AllowFileTypeEnums {
     public static List<String> getModelTypeList() {
         return java.util.Arrays.asList(
                 GLB
+        );
+    }
+
+    public static List<String> getAudioTypeList() {
+        return java.util.Arrays.asList(
+                MP3
         );
     }
 }
