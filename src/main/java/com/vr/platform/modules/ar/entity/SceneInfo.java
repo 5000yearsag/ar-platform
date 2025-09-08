@@ -28,6 +28,12 @@ public class SceneInfo extends BaseInfo {
     @ApiModelProperty(value = "场景AR资源文件名")
     private String arResourceFileName;
 
+    @ApiModelProperty(value = "场景音频资源")
+    private String audioResourceUrl;
+
+    @ApiModelProperty(value = "场景音频资源文件名")
+    private String audioResourceFileName;
+
     @ApiModelProperty(value = "场景AR资源尺寸")
     private String arResourceDimension;
 

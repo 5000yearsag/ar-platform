@@ -30,12 +30,12 @@ public interface CollectionInfoMapper extends BaseMapper<CollectionInfo> {
 
 
     @Update("UPDATE collection_info SET collection_name = #{collectionName}, " +
-            "cover_img_url = #{coverImgUrl},  description = #{description} " +
+            "cover_img_url = #{coverImgUrl}, description = #{description}, enable_user_image = #{enableUserImage} " +
             "WHERE collection_uuid = #{collectionUuid}")
     void updateCollection(CollectionInfo collectionInfo);
 
-    @Insert("INSERT INTO collection_info(collection_uuid, collection_name, cover_img_url, description) " +
-            "VALUES(#{collectionUuid}, #{collectionName}, #{coverImgUrl}, #{description})")
+    @Insert("INSERT INTO collection_info(collection_uuid, collection_name, cover_img_url, description, enable_user_image) " +
+            "VALUES(#{collectionUuid}, #{collectionName}, #{coverImgUrl}, #{description}, #{enableUserImage})")
     int addCollection(AddCollectionRequest collectionInfo);
 
     @Delete("DELETE FROM collection_info WHERE collection_uuid = #{collectionUuid}")

@@ -11,9 +11,11 @@ import com.vr.platform.modules.ar.entity.SceneInfo;
 import com.vr.platform.modules.ar.entity.request.GetSceneRequest;
 import com.vr.platform.modules.ar.entity.request.GetAllCollectionRequest;
 import com.vr.platform.modules.ar.entity.response.GetAllSceneRes;
+import com.vr.platform.modules.ar.entity.response.UploadUserImageResponse;
 import com.vr.platform.modules.ar.entity.response.WxGetAllSceneRes;
 import com.vr.platform.modules.ar.entity.response.GetCollectionRes;
 import com.vr.platform.modules.ar.service.SceneInfoService;
+import com.vr.platform.modules.ar.service.UserUploadedImageService;
 import com.vr.platform.modules.ar.service.StatisticsService;
 import com.vr.platform.modules.ar.service.CollectionInfoService;
 import com.vr.platform.modules.ar.service.WxAppService;
@@ -73,6 +75,9 @@ public class GuestController {
     
     @Autowired
     private CollectionInfoService collectionInfoService;
+
+    @Autowired
+    private UserUploadedImageService userUploadedImageService;
 
     @ApiModelProperty(value = "小程序获取所有场景")
     @RequestMapping(value = "/getAllSceneByCollection", method = RequestMethod.GET)
@@ -217,6 +222,18 @@ public class GuestController {
             log.error("获取合集列表失败", e);
             return ResponseFormat.fail();
         }
+    }
+
+    @ApiModelProperty(value = "用户上传图片")
+    @PostMapping("/uploadUserImage")
+    public ResponseFormat<UploadUserImageResponse> uploadUserImage(
+            @RequestPart("file") MultipartFile file,
+            @RequestParam("collectionUuid") String collectionUuid,
+            @RequestParam("sceneUuid") String sceneUuid,
+            @RequestParam("userOpenid") String userOpenid) throws Exception {
+        log.info("用户上传图片 - collectionUuid: {}, sceneUuid: {}, userOpenid: {}", collectionUuid, sceneUuid, userOpenid);
+        UploadUserImageResponse response = userUploadedImageService.uploadUserImage(file, collectionUuid, sceneUuid, userOpenid);
+        return ResponseFormat.success(response);
     }
 
 }

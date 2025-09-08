@@ -23,4 +23,13 @@ public class UpdateCollectionRequest {
 
     @ApiModelProperty(value = "合集描述")
     private String description;
+
+    @ApiModelProperty(value = "合集类型")
+    private Integer collectionType;
+
+    @ApiModelProperty(value = "加载类型 0-普通加载 1-分段加载")
+    private Integer loadType;
+
+    @ApiModelProperty(value = "是否启用用户上传图片功能 0-否 1-是")
+    private Integer enableUserImage;
 }

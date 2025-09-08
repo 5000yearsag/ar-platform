@@ -12,6 +12,7 @@ import com.vr.platform.interceptor.AuthenticationTokenFilter;
 import com.vr.platform.interceptor.ValidateCodeFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -41,6 +42,9 @@ public class SecurityConfigurer {
 
     @Autowired
     private AuthIgnoreConfig authIgnoreConfig;
+    
+    @Value("${spring.profiles.active:prod}")
+    private String activeProfile;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -80,8 +84,13 @@ public class SecurityConfigurer {
                 .logoutUrl(Constant.TOKEN_LOGOUT_URL)
                 .logoutSuccessUrl("/sys/logout")
                 .addLogoutHandler(logoutHandler());
-        // 如果不用验证码，注释这个过滤器即可
-        http.addFilterBefore(new ValidateCodeFilter(authenticationFailureHandler()), UsernamePasswordAuthenticationFilter.class);
+        // 开发环境跳过验证码校验
+        if (!"dev".equals(activeProfile)) {
+            http.addFilterBefore(new ValidateCodeFilter(authenticationFailureHandler()), UsernamePasswordAuthenticationFilter.class);
+            log.info("验证码校验已启用 (profile: {})", activeProfile);
+        } else {
+            log.info("开发环境已禁用验证码校验");
+        }
         // token 验证过滤器
         http.addFilterBefore(new AuthenticationTokenFilter(authenticationManager(), authIgnoreConfig), UsernamePasswordAuthenticationFilter.class);
         // 认证异常处理

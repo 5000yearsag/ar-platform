@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource(value = {"classpath:application-oss.properties"})
 @ConfigurationProperties(prefix = "aliyun")
 @Data
 public class AliyunConfig {

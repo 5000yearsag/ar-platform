@@ -132,24 +132,32 @@ public class FileUtils {
     public static String getFileDimension(String filePath) {
         if(filePath == null || filePath.trim().isEmpty()){
             log.error("文件路径不能为空");
+            return "";
         }
         log.info("GetFileDimension 文件路径："+filePath);
         String dimensions = "";
-        IContainer container = IContainer.make();
-        int result = container.open(filePath, IContainer.Type.READ, null);
-        if (result > 0){
-            log.info("GetFileDimension 文件打开成功");
-            int numStreams = container.getNumStreams();
-            for (int i = 0; i < numStreams; i++) {
-                IStream stream = container.getStream(i);
-                IStreamCoder coder = stream.getStreamCoder();
-                if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO) {
-                    dimensions = coder.getWidth() + "*" + coder.getHeight();
+        
+        try {
+            IContainer container = IContainer.make();
+            int result = container.open(filePath, IContainer.Type.READ, null);
+            if (result > 0){
+                log.info("GetFileDimension 文件打开成功");
+                int numStreams = container.getNumStreams();
+                for (int i = 0; i < numStreams; i++) {
+                    IStream stream = container.getStream(i);
+                    IStreamCoder coder = stream.getStreamCoder();
+                    if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO) {
+                        dimensions = coder.getWidth() + "*" + coder.getHeight();
+                    }
                 }
+                container.close();
+            } else {
+                log.warn("GetFileDimension 文件打开失败: " + filePath);
             }
-
+        } catch (Exception | NoClassDefFoundError | UnsatisfiedLinkError e) {
+            log.warn("GetFileDimension 获取文件尺寸失败，跳过此步骤: " + e.getMessage());
+            dimensions = ""; // 返回空字符串，不影响文件上传
         }
-        container.close();
         return dimensions;
     }
 
