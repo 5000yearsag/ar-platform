@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSS CORS 测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>阿里云OSS CORS 测试</h1>
+    
+    <div class="test-section">
+        <h3>测试1: 简单请求 (GET)</h3>
+        <button onclick="testSimpleRequest()">测试简单请求</button>
+        <div id="result1"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>测试2: 预检请求 (OPTIONS)</h3>
+        <button onclick="testPreflightRequest()">测试预检请求</button>
+        <div id="result2"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>测试3: 带自定义Header的请求</h3>
+        <button onclick="testCustomHeaderRequest()">测试自定义Header</button>
+        <div id="result3"></div>
+    </div>
+
+    <script>
+        // 请替换为您的实际OSS bucket域名
+        const OSS_BASE_URL = 'https://lanyuar.oss-cn-shanghai.aliyuncs.com';
+        
+        function logResult(elementId, message, isSuccess = true) {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const className = isSuccess ? 'success' : 'error';
+            element.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+        }
+        
+        function testSimpleRequest() {
+            const resultDiv = document.getElementById('result1');
+            resultDiv.innerHTML = '';
+            
+            logResult('result1', '开始测试简单请求...');
+            
+            fetch(OSS_BASE_URL + '/test-cors.txt', {
+                method: 'GET',
+                mode: 'cors'
+            })
+            .then(response => {
+                if (response.ok) {
+                    logResult('result1', '✅ 简单请求成功！状态码: ' + response.status);
+                    logResult('result1', '响应头包含: ' + Array.from(response.headers.keys()).join(', '));
+                } else {
+                    logResult('result1', '❌ 请求失败，状态码: ' + response.status, false);
+                }
+            })
+            .catch(error => {
+                logResult('result1', '❌ 请求错误: ' + error.message, false);
+            });
+        }
+        
+        function testPreflightRequest() {
+            const resultDiv = document.getElementById('result2');
+            resultDiv.innerHTML = '';
+            
+            logResult('result2', '开始测试预检请求...');
+            
+            fetch(OSS_BASE_URL + '/test-cors.txt', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                mode: 'cors'
+            })
+            .then(response => {
+                logResult('result2', '✅ 预检请求成功！状态码: ' + response.status);
+                logResult('result2', '响应头包含: ' + Array.from(response.headers.keys()).join(', '));
+            })
+            .catch(error => {
+                logResult('result2', '❌ 预检请求错误: ' + error.message, false);
+            });
+        }
+        
+        function testCustomHeaderRequest() {
+            const resultDiv = document.getElementById('result3');
+            resultDiv.innerHTML = '';
+            
+            logResult('result3', '开始测试自定义Header请求...');
+            
+            fetch(OSS_BASE_URL + '/test-cors.txt', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Custom-Header': 'test-value'
+                },
+                mode: 'cors'
+            })
+            .then(response => {
+                logResult('result3', '✅ 自定义Header请求成功！状态码: ' + response.status);
+                logResult('result3', '响应头包含: ' + Array.from(response.headers.keys()).join(', '));
+            })
+            .catch(error => {
+                logResult('result3', '❌ 自定义Header请求错误: ' + error.message, false);
+            });
+        }
+    </script>
+</body>
+</html>

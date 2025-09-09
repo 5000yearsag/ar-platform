@@ -1,13 +1,27 @@
 package com.vr.platform.modules.ar.entity;
 
-import com.vr.platform.common.bean.entity.BaseInfo;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
-public class UserUploadedImage extends BaseInfo {
+public class UserUploadedImage {
+
+    @ApiModelProperty(value = "主键ID")
+    private Long id;
+
+    @ApiModelProperty(value = "状态  0：禁用   1：正常")
+    private Integer status;
+
+    @ApiModelProperty(value = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date createTime;
+
+    @ApiModelProperty(value = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date updateTime;
 
     @ApiModelProperty(value = "合集UUID")
     private String collectionUuid;

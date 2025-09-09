@@ -91,7 +91,11 @@ public class CollectionInfoService {
     public GetCollectionRes getCollection(String collectionUuid) {
         GetCollectionRes res = new GetCollectionRes();
         CollectionInfo collectionInfo = collectionInfoMapper.getCollectionByUuid(collectionUuid);
+        log.info("CollectionInfo from DB: enableUserImage = {}", collectionInfo.getEnableUserImage());
         BeanUtils.copyProperties(collectionInfo, res);
+        // 确保 enableUserImage 字段被正确设置
+        res.setEnableUserImage(collectionInfo.getEnableUserImage());
+        log.info("GetCollectionRes after manual set: enableUserImage = {}", res.getEnableUserImage());
         List<CollectionAppInfo> collectionAppInfoList = collectionAppMapper.getAppByCollectionUuid(collectionUuid);
         res.setCollectionAppList(collectionAppInfoList);
         return res;

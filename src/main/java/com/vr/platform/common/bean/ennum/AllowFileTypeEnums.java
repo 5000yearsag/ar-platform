@@ -49,7 +49,7 @@ public class AllowFileTypeEnums {
 
     public static List<String> getAudioTypeList() {
         return java.util.Arrays.asList(
-                MP3
+                MP3, MAP
         );
     }
 }

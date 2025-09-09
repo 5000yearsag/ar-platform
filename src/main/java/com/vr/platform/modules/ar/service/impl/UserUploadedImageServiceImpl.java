@@ -46,7 +46,7 @@ public class UserUploadedImageServiceImpl implements UserUploadedImageService {
         if (result > 0) {
             UploadUserImageResponse response = new UploadUserImageResponse();
             response.setImageUrl(uploadFileInfo.getUrl());
-            response.setRecordId(Long.valueOf(userImage.getId()));
+            response.setRecordId(userImage.getId());
             response.setUploadTime(System.currentTimeMillis());
             
             log.info("用户图片上传成功 - recordId: {}, imageUrl: {}", userImage.getId(), uploadFileInfo.getUrl());
