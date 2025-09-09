@@ -10,10 +10,10 @@ import java.util.List;
 public class GetCollectionRes extends CollectionInfo{
     private int sceneCount;
     private List<CollectionAppInfo> collectionAppList;
-    private int pvCount;        // 打开
-    private int click1Count;    // 进入
-    private int click2Count;    // 播放  
-    private int click3Count;    // 拍照分享
-    private int click4Count;    // 录像分享
-    private int click5Count;    // 资源加载
+    private Integer pvCount;        // 打开
+    private Integer click1Count;    // 进入
+    private Integer click2Count;    // 播放  
+    private Integer click3Count;    // 拍照分享
+    private Integer click4Count;    // 录像分享
+    private Integer click5Count;    // 资源加载
 }

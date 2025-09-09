@@ -30,20 +30,11 @@ public class AddSceneRequest {
     @ApiModelProperty(value = "场景AR资源尺寸")
     private String arResourceDimension;
 
-    @ApiModelProperty(value = "场景AR资源文件名")
-    private String arResourceFileName;
-
     @ApiModelProperty(value = "场景AR视频类型 tsbs-'透明视频'")
     private String videoEffect;
 
     @ApiModelProperty(value = "场景AR参数")
     private String spaceParam;
-
-    @ApiModelProperty(value = "场景音频资源")
-    private String audioResourceUrl;
-
-    @ApiModelProperty(value = "场景音频资源文件名")
-    private String audioResourceFileName;
 
     @ApiModelProperty(value = "场景描述")
     private String description;
