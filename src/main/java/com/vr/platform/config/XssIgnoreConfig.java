@@ -40,7 +40,7 @@ public class XssIgnoreConfig implements InitializingBean {
         map.keySet().forEach(mappingInfo -> {
             HandlerMethod handlerMethod = map.get(mappingInfo);
             XssIgnore method = AnnotationUtils.findAnnotation(handlerMethod.getMethod(), XssIgnore.class);
-            if(method != null){
+            if(method != null && mappingInfo.getPathPatternsCondition() != null){
                 mappingInfo.getPathPatternsCondition().getPatternValues().stream().forEach(url ->{
                     ignoreUrls.add(ReUtil.replaceAll(url, PATTERN, ASTERISK));
                 });

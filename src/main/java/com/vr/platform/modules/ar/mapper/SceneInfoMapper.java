@@ -39,7 +39,7 @@ public interface SceneInfoMapper {
             "scene_img_url = #{sceneImgUrl}, ar_resource_url = #{arResourceUrl}, ar_resource_file_name = #{arResourceFileName}, audio_resource_url = #{audioResourceUrl}, " +
             "audio_resource_file_name = #{audioResourceFileName}, space_param = #{spaceParam}, " +
             " ar_resource_dimension = #{arResourceDimension},video_effect = #{videoEffect}, extra_json = #{extraJson} " +
-            "WHERE id = #{id}")
+            "WHERE scene_uuid = #{sceneUuid}")
     void updateSceneInfo(SceneInfo sceneInfo);
 
     @Update("UPDATE scene_info SET status = #{status} " +

@@ -152,23 +152,31 @@ public class SceneInfoService {
         if(ObjectUtil.isNull(oldSceneInfo)){
             throw new BizException(BizReturnCode.BIZ_SCENE_NOT_EXIST);
         }
-        //如果从非透明视频改为透明视频，则缩小宽度为以前的1/2
-        if(ObjectUtils.isEmpty(oldSceneInfo.getVideoEffect())
-                && !ObjectUtils.isEmpty(request.getVideoEffect())
-                && StringUtils.equals(request.getVideoEffect(), "tsbs")){
-            String arResourceDimension = request.getArResourceDimension();
-            if(ObjectUtils.isEmpty(arResourceDimension)){
-                throw new BizException(BizReturnCode.BIZ_COLLECTION_AR_RESOURCE_DIMENSION_BLANK);
+        // 只有当videoEffect真正发生变化时才处理尺寸调整
+        String oldVideoEffect = oldSceneInfo.getVideoEffect();
+        String newVideoEffect = request.getVideoEffect();
+        
+        // 标准化null和空字符串为一致的比较值
+        String oldEffectNormalized = StringUtils.isEmpty(oldVideoEffect) ? null : oldVideoEffect;
+        String newEffectNormalized = StringUtils.isEmpty(newVideoEffect) ? null : newVideoEffect;
+        
+        // 如果videoEffect发生了实际变化
+        if(!StringUtils.equals(oldEffectNormalized, newEffectNormalized)){
+            //如果从非透明视频改为透明视频，则缩小宽度为以前的1/2
+            if(oldEffectNormalized == null && StringUtils.equals(newEffectNormalized, "tsbs")){
+                String arResourceDimension = request.getArResourceDimension();
+                if(ObjectUtils.isEmpty(arResourceDimension)){
+                    throw new BizException(BizReturnCode.BIZ_COLLECTION_AR_RESOURCE_DIMENSION_BLANK);
+                }
+                request.setArResourceDimension(fileService.processDimensions(arResourceDimension));
             }
-            request.setArResourceDimension(fileService.processDimensions(arResourceDimension));
-        }
-        // 如果从透明视频改为非透明视频，则使用之前的尺寸
-        if(!ObjectUtils.isEmpty(oldSceneInfo.getVideoEffect())
-                && ObjectUtils.isEmpty(request.getVideoEffect())){
-            if(ObjectUtils.isEmpty(oldSceneInfo.getArResourceDimension())){
-                throw new BizException(BizReturnCode.BIZ_COLLECTION_AR_RESOURCE_DIMENSION_BLANK);
+            // 如果从透明视频改为非透明视频，则恢复之前的尺寸
+            else if(StringUtils.equals(oldEffectNormalized, "tsbs") && newEffectNormalized == null){
+                if(ObjectUtils.isEmpty(oldSceneInfo.getArResourceDimension())){
+                    throw new BizException(BizReturnCode.BIZ_COLLECTION_AR_RESOURCE_DIMENSION_BLANK);
+                }
+                request.setArResourceDimension(fileService.processDimensions(oldSceneInfo.getArResourceDimension(),"upscale"));
             }
-            request.setArResourceDimension(fileService.processDimensions(oldSceneInfo.getArResourceDimension(),"upscale"));
         }
         sceneInfoMapper.updateSceneInfo(request);
     }

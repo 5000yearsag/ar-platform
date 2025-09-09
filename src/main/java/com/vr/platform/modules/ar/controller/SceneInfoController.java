@@ -1,6 +1,7 @@
 package com.vr.platform.modules.ar.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.vr.platform.common.annotation.XssIgnore;
 import com.vr.platform.common.bean.response.ResponseFormat;
 import com.vr.platform.modules.ar.entity.SceneInfo;
 import com.vr.platform.modules.ar.entity.request.*;
@@ -38,12 +39,14 @@ public class SceneInfoController {
         return ResponseFormat.success(sceneInfoService.getAllScene(request));
     }
 
+    @XssIgnore
     @PostMapping(value = "/addScene")
     public ResponseFormat<String> addScene(@RequestBody AddSceneRequest addSceneRequest) throws WxErrorException, IOException {
         log.info("add sceneInfo");
         return ResponseFormat.success(sceneInfoService.addScene(addSceneRequest));
     }
 
+    @XssIgnore
     @PostMapping(value = "/updateScene")
     public ResponseFormat updateScene(@RequestBody SceneInfo sceneInfo) {
         log.info("update sceneInfo");
