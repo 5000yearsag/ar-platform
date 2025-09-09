@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ardb
+    password: LtHenC6MFTRt6GPe
+    url: jdbc:mysql://127.0.0.1:3306/ardb?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true
+
+file:
+  env: release
+  server:
+    ip: https://app.lanyuxr.com/
+    path: /usr/local/www/arapp/uploads/
+
+wx:
+  request:
+    url: https://app.lanyuxr.com/api/guest/getAllSceneByCollection
+
+dromara:
+  x-file-storage: #文件存储配置
+    default-platform: aliyun-oss-1 #生产环境使用阿里云OSS
+    aliyun-oss:
+      - platform: aliyun-oss-1 # 存储平台标识
+        enable-storage: true  # 启用存储
+        access-key: ${ALIYUN_ACCESS_KEY_ID:your-access-key-id}
+        secret-key: ${ALIYUN_ACCESS_KEY_SECRET:your-access-key-secret}
+        end-point: oss-cn-shanghai.aliyuncs.com
+        bucket-name: lanyuar
+        domain: https://lanyuar.oss-cn-shanghai.aliyuncs.com/
+        base-path: prod/ # 生产环境基础路径
